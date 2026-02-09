@@ -1,0 +1,8 @@
+# Attributes for Git configuration
+
+# Specify the text files to be treated as binary
+*.png binary
+*.jpg binary
+*.gif binary
+
+# End of .gitattributes
