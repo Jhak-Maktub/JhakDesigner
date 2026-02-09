@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sentinel-X: AI Cyber Defense</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind Config and Custom CSS -->
+    <style>
+        /* Custom Keyframes for Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+        .animate-fade-in-out {
+            animation: fadeIn 0.3s ease-out forwards, fadeOut 0.3s ease-in 1.2s forwards;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-primary': '#0A0E1A',
+              'brand-secondary': '#12182C',
+              'brand-accent': '#38BDF8',
+              'brand-critical': '#F43F5E',
+              'brand-high': '#F97316',
+              'brand-medium': '#EAB308',
+              'brand-low': '#22C55E',
+              'brand-light': '#E2E8F0',
+              'brand-muted': '#64748B',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-brand-primary text-brand-light font-sans antialiased">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar Backdrop (Mobile) -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-brand-primary bg-opacity-30 z-40 lg:hidden opacity-0 pointer-events-none transition-opacity duration-200"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex flex-col absolute z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 h-screen overflow-y-auto no-scrollbar w-64 lg:w-20 xl:w-64 shrink-0 bg-brand-secondary p-4 transition-all duration-200 ease-in-out -translate-x-64">
+            <div class="flex flex-col h-full">
+                <!-- Header -->
+                <div class="flex items-center mb-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 20.944a12.02 12.02 0 009 3c4.524 0 8.42-2.455 9.873-6.028a12.02 12.02 0 00-2.255-9.968z"></path>
+                    </svg>
+                    <h1 class="text-2xl font-bold text-white ml-2 lg:hidden xl:block">Sentinel-X</h1>
+                </div>
+
+                <!-- Nav -->
+                <nav class="space-y-2 flex-grow" id="sidebar-nav">
+                    <button data-page="Dashboard" class="nav-link flex items-center p-3 rounded-lg transition-colors duration-200 w-full text-left bg-brand-accent text-white shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        <span class="ml-3 font-medium">Dashboard</span>
+                    </button>
+                    <button data-page="Ameaças" class="nav-link flex items-center p-3 rounded-lg transition-colors duration-200 w-full text-left text-brand-muted hover:bg-brand-secondary hover:text-brand-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <span class="ml-3 font-medium">Ameaças</span>
+                    </button>
+                    <button data-page="Endpoints" class="nav-link flex items-center p-3 rounded-lg transition-colors duration-200 w-full text-left text-brand-muted hover:bg-brand-secondary hover:text-brand-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                        <span class="ml-3 font-medium">Endpoints</span>
+                    </button>
+                    <button data-page="Relatórios" class="nav-link flex items-center p-3 rounded-lg transition-colors duration-200 w-full text-left text-brand-muted hover:bg-brand-secondary hover:text-brand-light">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="ml-3 font-medium">Relatórios</span>
+                    </button>
+                    <button data-page="Configurações" class="nav-link flex items-center p-3 rounded-lg transition-colors duration-200 w-full text-left text-brand-muted hover:bg-brand-secondary hover:text-brand-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="ml-3 font-medium">Configurações</span>
+                    </button>
+                </nav>
+
+                <!-- Footer -->
+                <div class="pt-4 border-t border-gray-700">
+                    <div class="p-3 bg-gray-700/50 rounded-lg text-center">
+                        <h3 class="font-semibold text-white">Plano Enterprise</h3>
+                        <p class="text-sm text-brand-muted mt-1">A sua segurança está no nível máximo.</p>
+                        <button id="manage-plan-btn" class="mt-3 w-full bg-brand-accent text-white py-2 rounded-lg text-sm font-semibold hover:bg-sky-400 transition-colors">
+                            Gerir Plano
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+            <!-- Header -->
+            <header class="sticky top-0 bg-brand-primary/80 backdrop-blur-sm border-b border-gray-700/50 z-30">
+                <div class="px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center justify-between h-16 -mb-px">
+                        <!-- Hamburger button -->
+                        <div class="flex">
+                            <button id="hamburger-btn" class="text-gray-500 hover:text-gray-600 lg:hidden">
+                                <span class="sr-only">Open sidebar</span>
+                                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="4" y="5" width="16" height="2"></rect>
+                                    <rect x="4" y="11" width="16" height="2"></rect>
+                                    <rect x="4" y="17" width="16" height="2"></rect>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Header Title -->
+                        <div class="flex-1">
+                            <h1 id="header-title" class="text-xl md:text-2xl font-semibold text-brand-light">Visão Geral da Segurança</h1>
+                        </div>
+
+                        <!-- Header Actions -->
+                        <div class="flex items-center space-x-3">
+                            <button id="search-btn" class="w-8 h-8 flex items-center justify-center bg-brand-secondary rounded-full text-brand-muted hover:text-brand-light transition-colors">
+                                <span class="sr-only">Search</span>
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </button>
+                            <div class="relative">
+                                <button id="notifications-btn" class="w-8 h-8 flex items-center justify-center bg-brand-secondary rounded-full text-brand-muted hover:text-brand-light transition-colors">
+                                    <span class="sr-only">Notifications</span>
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                </button>
+                                <span class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-brand-critical ring-2 ring-brand-primary"></span>
+                            </div>
+                            
+                            <div class="flex items-center space-x-3 ml-2 pl-3 border-l border-gray-700">
+                                <img class="h-8 w-8 rounded-full" src="https://picsum.photos/100" alt="User">
+                                <div>
+                                    <div class="font-medium text-brand-light">Admin</div>
+                                    <div class="text-xs text-brand-muted">Enterprise User</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+                <!-- Page Content -->
+                <div id="page-content">
+                    
+                    <!-- Dashboard Page -->
+                    <div id="Dashboard-page" class="page">
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold text-brand-light">Olá, Admin</h2>
+                            <p class="text-brand-muted">“A segurança que aprende, reage e protege sozinha.”</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+                            <div data-title="Ameaças Bloqueadas" class="stat-card bg-brand-secondary p-5 rounded-xl border border-gray-700/50 shadow-lg cursor-pointer hover:border-brand-accent transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-brand-muted">Ameaças Bloqueadas (24h)</p>
+                                        <p class="text-3xl font-bold text-brand-light mt-1">1,283</p>
+                                        <div class="text-sm font-semibold flex items-center mt-1 text-brand-low">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                            <span>+5.2%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-title="Endpoints Protegidos" class="stat-card bg-brand-secondary p-5 rounded-xl border border-gray-700/50 shadow-lg cursor-pointer hover:border-brand-accent transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-brand-muted">Endpoints Protegidos</p>
+                                        <p class="text-3xl font-bold text-brand-light mt-1">512</p>
+                                        <div class="text-sm font-semibold flex items-center mt-1 text-brand-low">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                            <span>100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-title="Vulnerabilidades" class="stat-card bg-brand-secondary p-5 rounded-xl border border-gray-700/50 shadow-lg cursor-pointer hover:border-brand-accent transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-brand-muted">Vulnerabilidades</p>
+                                        <p class="text-3xl font-bold text-brand-light mt-1">47</p>
+                                        <div class="text-sm font-semibold flex items-center mt-1 text-brand-critical">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                            <span>-12.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-title="Status do Sistema" class="stat-card bg-brand-secondary p-5 rounded-xl border border-gray-700/50 shadow-lg cursor-pointer hover:border-brand-accent transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-brand-muted">Status do Sistema</p>
+                                        <p class="text-3xl font-bold text-brand-light mt-1">Seguro</p>
+                                    </div>
+                                    <div><svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-brand-low" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 20.944a12.02 12.02 0 009 3c4.524 0 8.42-2.455 9.873-6.028a12.02 12.02 0 00-2.255-9.968z"></path></svg></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+                            <div class="lg:col-span-3 bg-brand-secondary p-5 rounded-xl border border-gray-700/50 shadow-lg h-full">
+                                <h3 class="text-lg font-semibold text-brand-light mb-4">Origem das Ameaças Globais</h3>
+                                <div id="bar-chart-container" class="w-full h-[300px] flex justify-around items-end gap-2 p-4"></div>
+                            </div>
+                            <div class="lg:col-span-2 bg-brand-secondary p-5 rounded-xl border border-gray-700/50 shadow-lg h-full">
+                                <h3 class="text-lg font-semibold text-brand-light mb-4">Distribuição por Severidade</h3>
+                                <div id="pie-chart-container" class="w-full h-[300px] flex justify-center items-center"></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-secondary p-5 rounded-xl border border-gray-700/50 shadow-lg">
+                            <h3 class="text-lg font-semibold text-brand-light mb-4">Alertas Recentes</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-brand-muted">
+                                    <thead class="text-xs text-brand-light uppercase bg-gray-700/50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">Timestamp</th>
+                                            <th scope="col" class="px-6 py-3">Descrição</th>
+                                            <th scope="col" class="px-6 py-3">Tipo</th>
+                                            <th scope="col" class="px-6 py-3">Severidade</th>
+                                            <th scope="col" class="px-6 py-3">IP de Origem</th>
+                                            <th scope="col" class="px-6 py-3">Localização</th>
+                                            <th scope="col" class="px-6 py-3 text-center">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="alerts-table-body">
+                                        <!-- Rows will be injected by JavaScript -->
+                                    </tbody>
+                                </table>
+                                <p id="no-alerts-message" class="text-center text-brand-muted py-8 hidden">Nenhum alerta para exibir.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Other Pages (hidden by default) -->
+                    <div id="Ameaças-page" class="page hidden"><div class="bg-brand-secondary p-8 rounded-xl border border-gray-700/50 shadow-lg text-center"><h2 class="text-3xl font-bold text-brand-light mb-4">Página de Análise de Ameaças</h2><p class="text-brand-muted">Esta secção irá conter ferramentas detalhadas para análise e gestão de ameaças.</p><p class="text-brand-accent mt-4">Em desenvolvimento...</p></div></div>
+                    <div id="Endpoints-page" class="page hidden"><div class="bg-brand-secondary p-8 rounded-xl border border-gray-700/50 shadow-lg text-center"><h2 class="text-3xl font-bold text-brand-light mb-4">Página de Gestão de Endpoints</h2><p class="text-brand-muted">Esta secção irá permitir a visualização e gestão de todos os endpoints protegidos.</p><p class="text-brand-accent mt-4">Em desenvolvimento...</p></div></div>
+                    <div id="Relatórios-page" class="page hidden"><div class="bg-brand-secondary p-8 rounded-xl border border-gray-700/50 shadow-lg text-center"><h2 class="text-3xl font-bold text-brand-light mb-4">Página de Relatórios</h2><p class="text-brand-muted">Esta secção irá permitir a geração e visualização de relatórios de segurança detalhados.</p><p class="text-brand-accent mt-4">Em desenvolvimento...</p></div></div>
+                    <div id="Configurações-page" class="page hidden"><div class="bg-brand-secondary p-8 rounded-xl border border-gray-700/50 shadow-lg text-center"><h2 class="text-3xl font-bold text-brand-light mb-4">Página de Configurações</h2><p class="text-brand-muted">Esta secção irá conter todas as configurações do sistema e da conta.</p><p class="text-brand-accent mt-4">Em desenvolvimento...</p></div></div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4 hidden" role="dialog" aria-modal="true">
+        <div id="modal-content" class="bg-brand-secondary rounded-xl shadow-2xl w-full max-w-2xl border border-gray-700/50 transform transition-all">
+            <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                <h2 id="modal-title" class="text-lg font-semibold text-brand-light"></h2>
+                <button id="modal-close-btn" class="text-brand-muted hover:text-brand-light transition-colors" aria-label="Fechar modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="modal-body" class="p-6"></div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DATA ---
+    const MOCK_ALERTS = [
+      { id: '1', timestamp: '2024-07-29 14:35:12', description: 'Múltiplas tentativas de login falhadas', type: 'Brute Force', severity: 'High', ip: '198.51.100.12', location: 'Russia' },
+      { id: '2', timestamp: '2024-07-29 14:32:05', description: 'Potencial injeção de SQL detectada', type: 'SQL Injection', severity: 'Critical', ip: '203.0.113.45', location: 'China' },
+      { id: '3', timestamp: '2024-07-29 14:28:49', description: 'Atividade incomum de acesso a ficheiros', type: 'UEBA', severity: 'Medium', ip: '192.168.1.102', location: 'Internal' },
+      { id: '4', timestamp: '2024-07-29 14:25:22', description: 'Scan de porta detectado', type: 'Port Scanning', severity: 'Medium', ip: '198.51.100.88', location: 'Brazil' },
+      { id: '5', timestamp: '2024-07-29 14:21:01', description: 'Dependência vulnerável encontrada', type: 'Vulnerability', severity: 'Low', ip: 'N/A', location: 'Server US-East-1' },
+      { id: '6', timestamp: '2024-07-29 14:15:33', description: 'Tráfego de saída para IP malicioso conhecido', type: 'Malware', severity: 'Critical', ip: '10.0.5.23', location: 'Internal' },
+      { id: '7', timestamp: '2024-07-29 14:10:59', description: 'Acesso suspeito de nova localização', type: 'UEBA', severity: 'High', ip: '203.0.113.199', location: 'Vietnam' },
+    ];
+    const MOCK_THREATS_BY_COUNTRY = [
+      { country: 'China', threats: 1250 }, { country: 'Russia', threats: 980 }, { country: 'USA', threats: 750 },
+      { country: 'Brazil', threats: 620 }, { country: 'India', threats: 480 }, { country: 'Vietnam', threats: 350 },
+      { country: 'Germany', threats: 210 },
+    ];
+    const MOCK_SEVERITY_DISTRIBUTION = [
+        { name: 'Critical', value: 23 }, { name: 'High', value: 41 },
+        { name: 'Medium', value: 89 }, { name: 'Low', value: 152 },
+    ];
+    const PAGE_TITLES = {
+        'Dashboard': 'Visão Geral da Segurança', 'Ameaças': 'Análise de Ameaças', 'Endpoints': 'Gestão de Endpoints',
+        'Relatórios': 'Relatórios de Segurança', 'Configurações': 'Configurações do Sistema'
+    };
+    const SEVERITY_CLASSES = {
+        Critical: 'bg-red-500/20 text-red-400 border-red-500/30', High: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+        Medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', Low: 'bg-green-500/20 text-green-400 border-green-500/30',
+    };
+    const PIE_CHART_COLORS = { Critical: '#F43F5E', High: '#F97316', Medium: '#EAB308', Low: '#22C55E' };
+    
+    // --- STATE ---
+    let visibleAlerts = [...MOCK_ALERTS];
+
+    // --- DOM ELEMENTS ---
+    const sidebar = document.getElementById('sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const headerTitle = document.getElementById('header-title');
+    const alertsTableBody = document.getElementById('alerts-table-body');
+    const noAlertsMessage = document.getElementById('no-alerts-message');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    // --- MODAL FUNCTIONS ---
+    const openModal = (title, contentHTML) => {
+        modalTitle.textContent = title;
+        modalBody.innerHTML = contentHTML;
+        modal.classList.remove('hidden');
+    };
+    const closeModal = () => {
+        modal.classList.add('hidden');
+    };
+
+    // --- RENDER FUNCTIONS ---
+    const renderAlertsTable = () => {
+        alertsTableBody.innerHTML = '';
+        if (visibleAlerts.length === 0) {
+            noAlertsMessage.classList.remove('hidden');
+            return;
+        }
+        noAlertsMessage.classList.add('hidden');
+
+        visibleAlerts.forEach(alert => {
+            const severityBadge = `<span class="px-2.5 py-1 text-xs font-semibold rounded-full border ${SEVERITY_CLASSES[alert.severity]}">${alert.severity}</span>`;
+            const actions = (alert.severity === 'Critical' || alert.severity === 'High') ?
+                `<div class="flex items-center justify-center space-x-2">
+                    <button data-action="investigate" class="px-3 py-1 text-xs font-semibold text-white bg-brand-accent rounded-md hover:bg-sky-400 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50">Investigar</button>
+                    <button data-action="ignore" class="px-3 py-1 text-xs font-semibold text-brand-muted bg-gray-700 rounded-md hover:bg-gray-600 hover:text-brand-light transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">Ignorar</button>
+                </div>` : '';
+            
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-700 hover:bg-gray-800/50 cursor-pointer';
+            row.dataset.alertId = alert.id;
+            row.innerHTML = `
+                <td class="px-6 py-4 font-mono text-gray-400">${alert.timestamp}</td>
+                <td class="px-6 py-4 text-brand-light font-medium">${alert.description}</td>
+                <td class="px-6 py-4">${alert.type}</td>
+                <td class="px-6 py-4">${severityBadge}</td>
+                <td class="px-6 py-4 font-mono">${alert.ip}</td>
+                <td class="px-6 py-4">${alert.location}</td>
+                <td class="px-6 py-4 relative">${actions}</td>
+            `;
+            alertsTableBody.appendChild(row);
+        });
+    };
+
+    const renderBarChart = () => {
+        const container = document.getElementById('bar-chart-container');
+        container.innerHTML = '';
+        const maxThreats = Math.max(...MOCK_THREATS_BY_COUNTRY.map(c => c.threats));
+        
+        MOCK_THREATS_BY_COUNTRY.forEach(country => {
+            const barWrapper = document.createElement('div');
+            barWrapper.className = 'flex flex-col items-center h-full justify-end flex-1';
+            const barHeight = (country.threats / maxThreats) * 100;
+
+            barWrapper.innerHTML = `
+                <div class="w-full text-center text-sm text-brand-muted font-bold">${country.threats}</div>
+                <div data-country="${country.country}" class="bar-chart-bar w-3/4 bg-brand-accent rounded-t-sm hover:opacity-80 cursor-pointer transition-all" style="height: ${barHeight}%;"></div>
+                <div class="text-xs text-brand-muted mt-2">${country.country}</div>
+            `;
+            container.appendChild(barWrapper);
+        });
+    };
+
+    const renderPieChart = () => {
+        const container = document.getElementById('pie-chart-container');
+        container.innerHTML = '';
+        const total = MOCK_SEVERITY_DISTRIBUTION.reduce((sum, item) => sum + item.value, 0);
+        let cumulativePercent = 0;
+        const gradients = MOCK_SEVERITY_DISTRIBUTION.map(item => {
+            const percent = (item.value / total) * 100;
+            const start = cumulativePercent;
+            cumulativePercent += percent;
+            return `${PIE_CHART_COLORS[item.name]} ${start}% ${cumulativePercent}%`;
+        }).join(', ');
+
+        const pie = document.createElement('div');
+        pie.className = 'w-48 h-48 rounded-full cursor-pointer';
+        pie.style.background = `conic-gradient(${gradients})`;
+        
+        const legend = document.createElement('div');
+        legend.className = 'ml-8 flex flex-col space-y-2';
+        MOCK_SEVERITY_DISTRIBUTION.forEach(item => {
+            legend.innerHTML += `
+                <div data-severity="${item.name}" class="pie-chart-legend flex items-center text-sm cursor-pointer">
+                    <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${PIE_CHART_COLORS[item.name]}"></span>
+                    <span class="text-brand-muted">${item.name}</span>
+                </div>
+            `;
+        });
+        
+        container.appendChild(pie);
+        container.appendChild(legend);
+    };
+
+    // --- PAGE NAVIGATION ---
+    const switchPage = (pageName) => {
+        document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
+        document.getElementById(`${pageName}-page`).classList.remove('hidden');
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.toggle('bg-brand-accent', link.dataset.page === pageName);
+            link.classList.toggle('text-white', link.dataset.page === pageName);
+            link.classList.toggle('shadow-lg', link.dataset.page === pageName);
+            link.classList.toggle('text-brand-muted', link.dataset.page !== pageName);
+        });
+        headerTitle.textContent = PAGE_TITLES[pageName] || pageName;
+    };
+
+    // --- EVENT HANDLERS ---
+    const handleTableClick = (e) => {
+        const row = e.target.closest('tr');
+        if (!row) return;
+        
+        const alertId = row.dataset.alertId;
+        const alert = MOCK_ALERTS.find(a => a.id === alertId);
+        if (!alert) return;
+
+        const actionTarget = e.target.closest('[data-action]');
+        if (actionTarget) {
+            e.stopPropagation(); // Prevent row click when button is clicked
+            const action = actionTarget.dataset.action;
+            if (action === 'ignore') {
+                visibleAlerts = visibleAlerts.filter(a => a.id !== alertId);
+                const tooltip = document.createElement('div');
+                tooltip.className = 'absolute z-10 -top-8 left-1/2 -translate-x-1/2 px-3 py-1.5 text-xs font-semibold text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap animate-fade-in-out';
+                tooltip.innerHTML = `Ignorado <div class="absolute left-1/2 -translate-x-1/2 bottom-[-4px] w-2.5 h-2.5 bg-gray-900 rotate-45"></div>`;
+                actionTarget.parentElement.parentElement.appendChild(tooltip);
+                setTimeout(renderAlertsTable, 1500);
+            } else if (action === 'investigate') {
+                showModalForAlert(alert);
+            }
+        } else {
+            showModalForAlert(alert);
+        }
+    };
+
+    const showModalForAlert = (alert) => {
+        const content = `
+            <div class="space-y-2 text-brand-light">
+                <p><strong>ID:</strong> ${alert.id}</p>
+                <p><strong>Timestamp:</strong> <span class="font-mono">${alert.timestamp}</span></p>
+                <p><strong>Descrição:</strong> ${alert.description}</p>
+                <p><strong>Tipo:</strong> ${alert.type}</p>
+                <p><strong>Severidade:</strong> ${alert.severity}</p>
+                <p><strong>IP de Origem:</strong> <span class="font-mono">${alert.ip}</span></p>
+                <p><strong>Localização:</strong> ${alert.location}</p>
+            </div>`;
+        openModal(`Detalhes do Alerta #${alert.id}`, content);
+    };
+    
+    const showModalForFilteredAlerts = (title, alerts) => {
+        const listItems = alerts.length > 0 
+            ? alerts.map(alert => `<li class="p-2 bg-brand-primary rounded-md"><p class="font-semibold text-brand-light">${alert.description}</p><p class="text-sm text-brand-muted">${alert.timestamp} - ${alert.ip}</p></li>`).join('')
+            : '<p class="text-brand-muted">Nenhum alerta encontrado para esta seleção.</p>';
+
+        const content = `<div class="max-h-96 overflow-y-auto"><ul class="space-y-2">${listItems}</ul></div>`;
+        openModal(title, content);
+    };
+
+    // --- EVENT LISTENERS ---
+    hamburgerBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-64');
+        sidebarBackdrop.classList.toggle('opacity-0');
+        sidebarBackdrop.classList.toggle('pointer-events-none');
+    });
+
+    sidebarBackdrop.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-64');
+        sidebarBackdrop.classList.add('opacity-0');
+        sidebarBackdrop.classList.add('pointer-events-none');
+    });
+
+    document.getElementById('sidebar-nav').addEventListener('click', (e) => {
+        const navLink = e.target.closest('.nav-link');
+        if (navLink && navLink.dataset.page) {
+            switchPage(navLink.dataset.page);
+        }
+    });
+
+    modal.addEventListener('click', closeModal);
+    modalCloseBtn.addEventListener('click', closeModal);
+    document.getElementById('modal-content').addEventListener('click', e => e.stopPropagation());
+    window.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+
+    alertsTableBody.addEventListener('click', handleTableClick);
+    
+    // Header & Plan buttons
+    document.getElementById('manage-plan-btn').addEventListener('click', () => openModal("Gerir Plano", "<p>A gestão de planos estará disponível em breve. Contacte o suporte para mais informações.</p>"));
+    document.getElementById('search-btn').addEventListener('click', () => openModal("Pesquisa", "<p>A funcionalidade de pesquisa avançada está a ser implementada.</p>"));
+    document.getElementById('notifications-btn').addEventListener('click', () => openModal("Notificações", "<p>Não há novas notificações.</p>"));
+
+    // Stat cards
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const title = card.dataset.title;
+            openModal(`Detalhes de ${title}`, `<p>Mais informações sobre ${title} estarão disponíveis aqui.</p>`);
+        });
+    });
+    
+    // Charts
+    document.getElementById('bar-chart-container').addEventListener('click', e => {
+        const bar = e.target.closest('.bar-chart-bar');
+        if (bar) {
+            const country = bar.dataset.country;
+            const filtered = MOCK_ALERTS.filter(a => a.location === country);
+            showModalForFilteredAlerts(`Alertas de ${country}`, filtered);
+        }
+    });
+    document.getElementById('pie-chart-container').addEventListener('click', e => {
+        const legendItem = e.target.closest('.pie-chart-legend');
+        if (legendItem) {
+            const severity = legendItem.dataset.severity;
+            const filtered = MOCK_ALERTS.filter(a => a.severity === severity);
+            showModalForFilteredAlerts(`Alertas de Severidade ${severity}`, filtered);
+        }
+    });
+
+    // --- INITIAL RENDER ---
+    renderAlertsTable();
+    renderBarChart();
+    renderPieChart();
+});
+</script>
+   <script>
+//Script Ant-Bug do Google Sites (Scroll Suave)
+document.querySelectorAll('a[hre^="#"]').forEach(anchor => {
+
+anchor.addEventListener('click',function (e){
+     
+      e.preventDefault();
+
+       Const targetld = this.getAttribute('hre');
+        
+        Const targetElement = document.querySelector(targetld);
+           if (targetElement){
+              targetElement.scrollIntoView({ 
+                 behavior: 'smooth',
+                    block:'start'
+                    });
+                  }
+                 });
+               });
+  </script>    
+</body>
+</html>
